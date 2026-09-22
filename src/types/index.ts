@@ -5,7 +5,7 @@ export interface IApi {
     post<T extends object>(uri: string, data: object, method?: ApiPostMethods): Promise<T>;
 }
 
-enum EPaymentMethod {
+export enum EPaymentMethod {
     Card = 'card',
     Cash = 'cash',
 
@@ -28,3 +28,5 @@ export interface IBuyer {
   phone: string;
   address: string;
 }
+
+export type TValidationErrors = Partial<Record<keyof IBuyer, string>>

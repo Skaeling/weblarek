@@ -2,6 +2,9 @@ import './scss/styles.scss';
 import { apiProducts } from "./utils/data";
 import { Products } from "./components/models/Products"
 import { Cart } from './components/models/Cart';
+import { Buyer } from './components/models/Buyer';
+import { EPaymentMethod } from './types'
+
 
 const productsModel = new Products();
 // console.log(`Массив [] из каталога:`, productsModel.getItems())
@@ -31,3 +34,30 @@ const cartModel = new Cart();
 // cartModel.clear()
 // console.log(`Массив [] из cart:`, cartModel.getItems())
 // console.log(cartModel.getTotalPrice())
+
+const buyerModel = new Buyer()
+const mockUserFull = {
+  payment: EPaymentMethod.Card,
+  email: "example@com",
+  phone: "+123456789",
+  address: 'Moscow city'
+}
+
+const mockUserPart = {
+  phone: ""
+}
+
+buyerModel.setData(mockUserFull);
+console.log(`Замена всех полей`, buyerModel.getData())
+console.log(`Успешная валидация`, buyerModel.validate())
+buyerModel.setData(mockUserPart);
+console.log(`Поле телефон не заполнено`, buyerModel.validate())
+console.log(`Замена одного поля`, buyerModel.getData())
+buyerModel.clearData()
+console.log(`Очищены все поля`, buyerModel.getData())
+console.log(`Все поля не заполнены`, buyerModel.validate())
+
+
+
+
+
