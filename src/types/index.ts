@@ -30,3 +30,24 @@ export interface IBuyer {
 }
 
 export type TValidationErrors = Partial<Record<keyof IBuyer, string>>
+
+export interface IProductsResponse {
+
+    "total": number,
+    "items": IProduct[]
+}
+
+export interface IOrderRequest extends IBuyer {
+
+    "total": number,
+    "items": IProduct['id'][]
+}
+
+export type TOrderResponse = {
+  "id": string,
+  "total": number
+
+}
+
+// тип для объекта, отправляемого на сервер при оформлении заказа;
+// типы для объектов, принимаемых с сервера в разных запросах.

@@ -5,7 +5,6 @@ export class Products {
 private _items: IProduct[] = [];
 private _itemCard: IProduct | null = null;
 
-  constructor() {};
 // сохраняет массив товаров из параметров метода
   setItems(items: IProduct[]): void {
     this._items = items;
@@ -32,8 +31,3 @@ private _itemCard: IProduct | null = null;
   }
 
 }
-
-
-
-
-// Методы класса:

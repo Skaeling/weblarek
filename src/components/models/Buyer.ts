@@ -1,6 +1,4 @@
-import { TPayment } from "../../types"
-import { IBuyer } from "../../types"
-import { TValidationErrors } from "../../types"
+import { TPayment, IBuyer, TValidationErrors } from "../../types"
 
 
 export class Buyer {

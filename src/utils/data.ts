@@ -1,3 +1,5 @@
+import { EPaymentMethod } from '../types'
+
 export const apiProducts = {
     "total": 10,
     "items": [
@@ -34,4 +36,15 @@ export const apiProducts = {
             "price": 2500
         },
     ]
+}
+
+export const mockUserFull = {
+  payment: EPaymentMethod.Card,
+  email: "example@com",
+  phone: "+123456789",
+  address: 'Moscow city'
+}
+
+export const mockUserPart = {
+  phone: ""
 }
