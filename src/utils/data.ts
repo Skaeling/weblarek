@@ -46,5 +46,6 @@ export const mockUserFull = {
 }
 
 export const mockUserPart = {
-  phone: ""
+payment: null,
+address: ""
 }

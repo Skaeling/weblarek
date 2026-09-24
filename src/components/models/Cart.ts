@@ -1,27 +1,22 @@
 import { IProduct } from "../../types";
 
-//подумать над единым наименованием методов продукт против айтемс 
-//подумать над работой filter в удалении товара - сейчас удалит оба одинаковых 
 
 export class Cart {
   private _list : IProduct[] = []
 
-//сохраняет массив товаров, которые находятся в корзине
-  setItems(items: IProduct[]): void {
-    this._list = items;
-  }
-
+//получает массив товаров, которые находятся в корзине
   getItems(): IProduct[] {
-    return this._list
+    return [...this._list]
   }
 
   // добавляет товар, который был получен в параметре, в массив корзины
-  setProduct(product: IProduct): void {
+  addProduct(product: IProduct): void {
     this._list.push(product)
   }
 
-  // удаляет товар, который был получен в параметре, из массива корзины
-  delProduct(product: IProduct): void {
+  // удаляет товар, который был получен в параметре, из массива корзины. 
+  // В данном решении метод удалит два одинаковых товара за раз. 
+  removeProduct(product: IProduct): void {
     this._list = this._list.filter(item => item.id !== product.id);
   }
 

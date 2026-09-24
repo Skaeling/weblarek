@@ -1,5 +1,4 @@
-import { IProductsResponse, IOrderRequest, IApi, TOrderResponse } from "../../types"
-
+import { IProductsResponse, IOrderRequest, IApi, TOrderResponse, TOrderResponceError } from "../../types"
 
 
 export class ApiService {
@@ -14,7 +13,7 @@ private api: IApi;
 
   }
 
-  postOrder(data: IOrderRequest): Promise<TOrderResponse> {
+  postOrder(data: IOrderRequest): Promise<TOrderResponse | TOrderResponceError> {
     return this.api.post('/order/', data, 'POST') 
 
   }

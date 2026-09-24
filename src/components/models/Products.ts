@@ -6,22 +6,22 @@ private _items: IProduct[] = [];
 private _itemCard: IProduct | null = null;
 
 // сохраняет массив товаров из параметров метода
-  setItems(items: IProduct[]): void {
+  addItems(items: IProduct[]): void {
     this._items = items;
   }
 
 // получает массив товаров из модели
   getItems(): IProduct[] {
-    return this._items;
-
+    return [...this._items]
   }
+
 // получает товар по его id
   getItemById(itemId: string) : IProduct | undefined {
     return this._items.find(item => item.id === itemId)
   }
 
 // сохраняет товар для подробного отображения
-  setItemCard(itemCard: IProduct): void {
+  addItemCard(itemCard: IProduct): void {
     this._itemCard = itemCard
   }
 

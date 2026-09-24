@@ -7,72 +7,87 @@ import { Api } from './components/base/Api';
 import { ApiService } from './components/base/ApiService';
 import { API_URL } from './utils/constants'
 
-
+console.log('=ПРОДУКТЫ=')
 const productsModel = new Products();
-// console.log(`Массив [] из каталога:`, productsModel.getItems())
-// productsModel.setItems(apiProducts.items);
-// console.log(`Массив товаров из каталога:`, productsModel.getItems())
-// console.log(`ItembyId`, productsModel.getItemById('c101ab44-ed99-4a54-990d-47aa2bb4e7d9'))
-// console.log(`ItembyIdNofound`, productsModel.getItemById('1ab44-ed99-4a54-990d-47aa2bb4e7d9'))
-// console.log(`itemcardzero`, productsModel.getItemCard())
-// productsModel.setItemCard(apiProducts.items[3])
-// console.log(`itemcardyes`, productsModel.getItemCard())
+// добавляем товары в каталог
+productsModel.addItems(apiProducts.items);
+console.log(`Массив товаров из модели:`, productsModel.getItems())
 
+// получаем товар по Id
+console.log(`Товар по Id`, productsModel.getItemById(apiProducts.items[3].id))
+console.log(`Товар по Id не найден`, productsModel.getItemById('1234'))
+
+// сохраняем товар для подробного отображения и получаем его
+productsModel.addItemCard(apiProducts.items[3])
+console.log(`Подробное описание товара`, productsModel.getItemCard())
+
+
+console.log(`\n\n=КОРЗИНА=`)
 const cartModel = new Cart();
-// console.log(`Массив [] из cart:`, cartModel.getItems())
-cartModel.setItems(apiProducts.items)
-console.log(cartModel.getTotalCount())
-console.log(cartModel.getTotalPrice())
-console.log(`ItembyId`, cartModel.getItemById('c101ab44-ed99-4a54-990d-47aa2bb4e7d9'))
-console.log(`ItembyIdNofound`, cartModel.getItemById('1ab44-ed99-4a54-990d-47aa2bb4e7d9'))
-// console.log(`Массив [] из cart:`, cartModel.getItems())
-cartModel.setProduct(apiProducts.items[3])
-console.log(cartModel.getTotalCount())
-console.log(cartModel.getTotalPrice())
+// добавление товаров
+cartModel.addProduct(apiProducts.items[3])
+cartModel.addProduct(apiProducts.items[1])
 
-// console.log(`Массив [] из cart:`, cartModel.getItems())
-cartModel.delProduct(apiProducts.items[3])
-// console.log(`Массив [] из cart:`, cartModel.getItems())
+// получение массива товаров, которые находятся в корзине
+console.log(`Массив товаров в корзине:`, cartModel.getItems())
+
+// получение количества и стоимости всех товаров в корзине
+console.log(`Количество товаров в корзине:`, cartModel.getTotalCount())
+console.log(`Стоимость товаров в корзине:`, cartModel.getTotalPrice())
+
+// проверка наличия товара в корзине по его id, полученного в параметр метода.
+console.log(`Товар по Id`, cartModel.getItemById(apiProducts.items[3].id))
+console.log(`Товар по Id не найден`, cartModel.getItemById(apiProducts.items[2].id))
+
+// удаление товара, полученного в параметре из массива корзины
+cartModel.removeProduct(apiProducts.items[3])
+console.log(`Был удален товар, осталось товаров:`, cartModel.getTotalCount())
+
+// очистка корзины
 cartModel.clear()
-// console.log(`Массив [] из cart:`, cartModel.getItems())
-console.log(cartModel.getTotalPrice())
-cartModel.setItems(apiProducts.items)
+console.log(`Была очищена корзина:`, cartModel.getItems())
 
 
+console.log('\n\n=ПОКУПАТЕЛЬ=')
 const buyerModel = new Buyer()
+// Сохраняем данные всех полей в модель
 buyerModel.setData(mockUserFull);
-console.log(`Замена всех полей`, buyerModel.getData())
+console.log(`Создан покупатель с полным профилем`, buyerModel.getData())
+
+// Меняем одно поле в модели
+buyerModel.setData({address: 'Spb'});
+console.log(`Произведена замена поля город`, buyerModel.getData())
+
+//валидация данных покупателя
 console.log(`Успешная валидация`, buyerModel.validate())
-buyerModel.setData(mockUserPart);
-console.log(`Поле телефон не заполнено`, buyerModel.validate())
-console.log(`Замена одного поля`, buyerModel.getData())
+console.log(`Неполная валидация`, buyerModel.setData(mockUserPart), buyerModel.validate())
+
+//очистка данных покупателя
 buyerModel.clearData()
 console.log(`Очищены все поля`, buyerModel.getData())
-console.log(`Все поля не заполнены`, buyerModel.validate())
-buyerModel.setData(mockUserFull);
 
 
-const Request = new Api(API_URL)
-const newRequest = new ApiService(Request)
+console.log('\n\n=API=')
+// Запрос к серверу за объектом с данными каталога.
+const request = new Api(API_URL)
+const catalogRequest = new ApiService(request)
+const productsApi = await catalogRequest.getProducts()
+console.log(`Объект с сервера с данными каталога`, productsApi)
 
-console.log(`Массив продуктов`, await newRequest.getProducts())
-const cartModelOrder = new Cart();
-const cartList = await newRequest.getProducts()
-cartModelOrder.setItems(cartList.items)
+
+// Сохранение массива в модели данных и вывод массива в консоль.
+const productsModelApi = new Products();
+productsModelApi.addItems(productsApi.items)
+console.log(`Массив продуктов из модели Products`, productsModelApi.getItems())
 
 
 // Пока не нужно для ПР8
+// buyerModel.setData(mockUserFull);
+// const cartModelOrder = new Cart()
+// cartModelOrder.addProduct(productsModelApi.getItems()[1])
 // const orderData = {
 //   ...buyerModel.getData(), 
 //   total: cartModelOrder.getTotalPrice(), 
-//   items: cartModelOrder.getItems().map(({ id }) => id) 
+//   items: cartModelOrder.getItems().map(({ id }) => id)} 
 
-// }
-// console.log(`Успешное размещение заказа`, await newRequest.postOrder(orderData))
-
-// Создание экземпляров всех созданных классов.
-// Тестирование всех методов моделей данных. 
-// Выполняется тестирование вызовом методов с передачей необходимых данных и проверкой результатов с помощью вывода данных в консоль. 
-// Данные, выводимые в консоль, должны быть также получены с использованием методов классов.
-// Запрос к серверу за объектом с данными каталога.
-// Сохранение массива в модели данных и вывод массива в консоль.
+//   console.log(await catalogRequest.postOrder(orderData))

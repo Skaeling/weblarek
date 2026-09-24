@@ -20,3 +20,9 @@ export const settings = {
 
 };
 
+export const buyerMap = {
+  'payment': '"Способ оплаты"',
+  'address': '"Адрес"',
+  'email': '"Email"',
+  'phone': '"Телефон"',
+};
