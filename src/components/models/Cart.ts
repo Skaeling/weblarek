@@ -1,23 +1,22 @@
-import { IProduct } from "../../types";
-
+import { IProduct } from '../../types';
 
 export class Cart {
-  private _list : IProduct[] = []
+  private _list: IProduct[] = [];
 
-//получает массив товаров, которые находятся в корзине
+  //получает массив товаров, которые находятся в корзине
   getItems(): IProduct[] {
-    return [...this._list]
+    return [...this._list];
   }
 
   // добавляет товар, который был получен в параметре, в массив корзины
   addProduct(product: IProduct): void {
-    this._list.push(product)
+    this._list.push(product);
   }
 
-  // удаляет товар, который был получен в параметре, из массива корзины. 
-  // В данном решении метод удалит два одинаковых товара за раз. 
+  // удаляет товар, который был получен в параметре, из массива корзины.
+  // В данном решении метод удалит два одинаковых товара за раз.
   removeProduct(product: IProduct): void {
-    this._list = this._list.filter(item => item.id !== product.id);
+    this._list = this._list.filter((item) => item.id !== product.id);
   }
 
   // удаляет все товары из корзины
@@ -27,22 +26,22 @@ export class Cart {
 
   // получает стоимость всех товаров в корзине
   getTotalPrice(): number {
-    let total = 0
+    let total = 0;
     for (const item of this._list) {
-      if (item.price !== null)
-        {total += item.price}
+      if (item.price !== null) {
+        total += item.price;
+      }
     }
-    return total
+    return total;
   }
 
   // получает количество всех товаров в корзине
   getTotalCount(): number {
-    return this._list.length
+    return this._list.length;
   }
 
   // проверяет наличия товара в корзине по его id, полученному в параметре метода
   getItemById(itemId: string): IProduct | undefined {
-    return this._list.find(item => item.id === itemId)
-
+    return this._list.find((item) => item.id === itemId);
   }
 }

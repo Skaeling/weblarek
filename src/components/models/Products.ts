@@ -1,33 +1,31 @@
-import { IProduct } from "../../types"
+import { IProduct } from '../../types';
 
 export class Products {
+  private _items: IProduct[] = [];
+  private _itemCard: IProduct | null = null;
 
-private _items: IProduct[] = [];
-private _itemCard: IProduct | null = null;
-
-// сохраняет массив товаров из параметров метода
+  // сохраняет массив товаров из параметров метода
   addItems(items: IProduct[]): void {
     this._items = items;
   }
 
-// получает массив товаров из модели
+  // получает массив товаров из модели
   getItems(): IProduct[] {
-    return [...this._items]
+    return [...this._items];
   }
 
-// получает товар по его id
-  getItemById(itemId: string) : IProduct | undefined {
-    return this._items.find(item => item.id === itemId)
+  // получает товар по его id
+  getItemById(itemId: string): IProduct | undefined {
+    return this._items.find((item) => item.id === itemId);
   }
 
-// сохраняет товар для подробного отображения
+  // сохраняет товар для подробного отображения
   addItemCard(itemCard: IProduct): void {
-    this._itemCard = itemCard
+    this._itemCard = itemCard;
   }
 
   // получает товар для подробного отображения
   getItemCard(): IProduct | null {
     return this._itemCard;
   }
-
 }
