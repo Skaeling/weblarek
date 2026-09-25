@@ -9,12 +9,7 @@ export interface IApi {
   ): Promise<T>;
 }
 
-export enum EPaymentMethod {
-  Card = 'card',
-  Cash = 'cash',
-}
-
-export type TPayment = EPaymentMethod | null;
+export type TPayment = 'card' | 'cash';
 
 export interface IProduct {
   id: string;
@@ -26,7 +21,7 @@ export interface IProduct {
 }
 
 export interface IBuyer {
-  payment: TPayment;
+  payment: TPayment | null;
   email: string;
   phone: string;
   address: string;
@@ -39,7 +34,8 @@ export interface IProductsResponse {
   items: IProduct[];
 }
 
-export interface IOrderRequest extends IBuyer {
+export interface IOrderRequest extends Omit<IBuyer, 'payment'> {
+  payment: TPayment;
   total: number;
   items: IProduct['id'][];
 }
@@ -47,8 +43,4 @@ export interface IOrderRequest extends IBuyer {
 export type TOrderResponse = {
   id: string;
   total: number;
-};
-
-export type TOrderResponceError = {
-  error: string;
 };

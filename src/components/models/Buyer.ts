@@ -2,44 +2,44 @@ import { TPayment, IBuyer, TValidationErrors } from '../../types';
 import { buyerMap } from '../../utils/constants';
 
 export class Buyer {
-  private _payment: TPayment = null;
-  private _address: string = '';
-  private _email: string = '';
-  private _phone: string = '';
+  private payment: TPayment | null = null;
+  private address: string = '';
+  private email: string = '';
+  private phone: string = '';
 
   // сохраняет данные в модель,
   // с возможностью изменить только одно значение объекта, не удаляя других.
   setData(data: Partial<IBuyer>): void {
     if (data.payment !== undefined) {
-      this._payment = data.payment;
+      this.payment = data.payment;
     }
     if (data.address !== undefined) {
-      this._address = data.address;
+      this.address = data.address;
     }
     if (data.email !== undefined) {
-      this._email = data.email;
+      this.email = data.email;
     }
     if (data.phone !== undefined) {
-      this._phone = data.phone;
+      this.phone = data.phone;
     }
   }
 
   // получает все данные покупателя
   getData(): IBuyer {
     return {
-      payment: this._payment,
-      address: this._address,
-      email: this._email,
-      phone: this._phone,
+      payment: this.payment,
+      address: this.address,
+      email: this.email,
+      phone: this.phone,
     };
   }
 
   // очищает все данные покупателя
   clearData(): void {
-    this._payment = null;
-    this._address = '';
-    this._email = '';
-    this._phone = '';
+    this.payment = null;
+    this.address = '';
+    this.email = '';
+    this.phone = '';
   }
 
   //валидирует все поля формы, возвращает объект с ошибками или пустой.

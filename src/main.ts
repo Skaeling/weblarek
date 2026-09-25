@@ -4,13 +4,13 @@ import { Products } from './components/models/Products';
 import { Cart } from './components/models/Cart';
 import { Buyer } from './components/models/Buyer';
 import { Api } from './components/base/Api';
-import { ApiService } from './components/base/ApiService';
+import { ApiService } from './components/services/ApiService';
 import { API_URL } from './utils/constants';
 
 console.log('=ПРОДУКТЫ=');
 const productsModel = new Products();
 // добавляем товары в каталог
-productsModel.addItems(apiProducts.items);
+productsModel.setItems(apiProducts.items);
 console.log(`Массив товаров из модели:`, productsModel.getItems());
 
 // получаем товар по Id
@@ -18,8 +18,8 @@ console.log(`Товар по Id`, productsModel.getItemById(apiProducts.items[3]
 console.log(`Товар по Id не найден`, productsModel.getItemById('1234'));
 
 // сохраняем товар для подробного отображения и получаем его
-productsModel.addItemCard(apiProducts.items[3]);
-console.log(`Подробное описание товара`, productsModel.getItemCard());
+productsModel.setSelectedItem(apiProducts.items[3]);
+console.log(`Подробное описание товара`, productsModel.getSelectedItem());
 
 console.log(`\n\n=КОРЗИНА=`);
 const cartModel = new Cart();
@@ -35,10 +35,13 @@ console.log(`Количество товаров в корзине:`, cartModel.
 console.log(`Стоимость товаров в корзине:`, cartModel.getTotalPrice());
 
 // проверка наличия товара в корзине по его id, полученного в параметр метода.
-console.log(`Товар по Id`, cartModel.getItemById(apiProducts.items[3].id));
 console.log(
-  `Товар по Id не найден`,
-  cartModel.getItemById(apiProducts.items[2].id)
+  `Товар есть в корзине?`,
+  cartModel.hasItemById(apiProducts.items[3].id)
+);
+console.log(
+  `Товар есть в корзине?`,
+  cartModel.hasItemById(apiProducts.items[2].id)
 );
 
 // удаление товара, полученного в параметре из массива корзины
@@ -57,39 +60,30 @@ console.log(`Создан покупатель с полным профилем`
 
 // Меняем одно поле в модели
 buyerModel.setData({ address: 'Spb' });
-console.log(`Произведена замена поля город`, buyerModel.getData());
+console.log(`Произведена замена поля 'город'`, buyerModel.getData());
 
 //валидация данных покупателя
 console.log(`Успешная валидация`, buyerModel.validate());
-console.log(
-  `Неполная валидация`,
-  buyerModel.setData(mockUserPart),
-  buyerModel.validate()
-);
+buyerModel.setData(mockUserPart);
+console.log(`Неполная валидация`, buyerModel.validate());
 
 //очистка данных покупателя
 buyerModel.clearData();
 console.log(`Очищены все поля`, buyerModel.getData());
 
 console.log('\n\n=API=');
+
+const api = new Api(API_URL);
+const apiService = new ApiService(api);
+
 // Запрос к серверу за объектом с данными каталога.
-const request = new Api(API_URL);
-const catalogRequest = new ApiService(request);
-const productsApi = await catalogRequest.getProducts();
-console.log(`Объект с сервера с данными каталога`, productsApi);
-
-// Сохранение массива в модели данных и вывод массива в консоль.
-const productsModelApi = new Products();
-productsModelApi.addItems(productsApi.items);
-console.log(`Массив продуктов из модели Products`, productsModelApi.getItems());
-
-// Пока не нужно для ПР8
-// buyerModel.setData(mockUserFull);
-// const cartModelOrder = new Cart()
-// cartModelOrder.addProduct(productsModelApi.getItems()[1])
-// const orderData = {
-//   ...buyerModel.getData(),
-//   total: cartModelOrder.getTotalPrice(),
-//   items: cartModelOrder.getItems().map(({ id }) => id)}
-
-//   console.log(await catalogRequest.postOrder(orderData))
+try {
+  const productsApi = await apiService.getProducts();
+  console.log(`Объект с сервера с данными каталога`, productsApi);
+  
+  // Сохранение массива в модели данных и вывод массива в консоль.
+  productsModel.setItems(productsApi.items);
+  console.log(`Массив продуктов из модели Products`, productsModel.getItems());
+} catch (error) {
+  console.error('Ошибка загрузки каталога', error);
+}

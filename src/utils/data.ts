@@ -1,4 +1,4 @@
-import { EPaymentMethod } from '../types'
+import { IBuyer } from "../types"
 
 export const apiProducts = {
     "total": 10,
@@ -38,14 +38,14 @@ export const apiProducts = {
     ]
 }
 
-export const mockUserFull = {
-  payment: EPaymentMethod.Card,
+export const mockUserFull: IBuyer = {
+  payment: "card",
   email: "example@com",
   phone: "+123456789",
-  address: 'Moscow city'
+  address: "Moscow city"
 }
 
-export const mockUserPart = {
+export const mockUserPart: Partial<IBuyer> = {
 payment: null,
 address: ""
 }
