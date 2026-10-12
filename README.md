@@ -8,6 +8,8 @@
 - src/components/base/ — папка с базовым кодом
 - src/components/models/ — папка с моделями данных
 - src/components/services/ — папка со слоем коммуникации
+- src/components/view/ — папка со слоем представления
+
 
 
 
@@ -285,3 +287,42 @@ type TOrderResponse = {
 - `getProducts(): Promise<IProductsResponse>` - совершает get запрос на эндпоинт `/product/` и возвращает объект, полученный от сервера, в котором находится массив товаров. 
 - `postOrder(data: IOrderRequest): Promise<TOrderResponse>` - совершает post запрос на эндпоинт `/order/` и передаёт в него данные, полученные в параметрах метода, возвращает объект заказа `TOrderResponse`, подтверждающий покупку. 
 
+### Слой представления
+каждый класс представления отвечает за свой блок разметки;
+три класса для работы с тремя разными темплейтами карточки должны иметь одного родителя. В родительский класс должен быть вынесен общий для всех дочерних классов функционал;
+два класса для форм должны иметь одного общего родителя, в который выносится общий для всех форм функционал;
+модальное окно не может иметь дочерних классов, от него не могут наследоваться другие классы. Вся разметка, которая отображается в модальных окнах, — это самостоятельные компоненты. Они могут быть выведены в любой блок сайта, в том числе и в модальном окне;
+в ответ на любое действие пользователя должно генерироваться событие, которое будет обработано Презентером.
+
+#### Класс Header
+Поля класса:
+- `busketButton: HTMLButtonElement` - 
+- `counterElement: HTMLElement` - 
+
+
+Конструктор: 
+- `constructor(container: HTMLElement)` - принимает ссылку на DOM элемент за отображение, которого он отвечает.
+
+Методы класса:
+- `protected set counter(value: number): ` - отображение счетчика товаров в корзине
+
+#### Класс Card
+Поля класса:
+- `categoryElement: HTMLElement` - элемент отвечающий за категорию товара карточки
+- `titleElement: HTMLElement` - элемент отвечающий за наименование товара карточки
+- `imageElement: HTMLImageElement` - элемент отвечающий за ссылку на изображение товара карточки
+- `priceElement: HTMLElement` - элемент отвечающий за цену товара карточки
+
+Конструктор класса: 
+- `constructor(container: HTMLElement)`{
+  super(container);
+  this.categoryElement = ensureElement<HTMLElement>('.card__category', this.container);
+  this.titleElement = ensureElement<HTMLElement>('.card__title', this.container);
+  this.imageElement = ensureElement<HTMLImageElement>('.card__image', this.container);
+  this.priceElement = ensureElement<HTMLElement>('.card__price', this.container);} - принимает ссылку на DOM элемент за отображение, которого он отвечает.
+
+Методы класса
+- `protected set category(value: string): void`
+- `protected set title(value: string): void` 
+- `protected set price(value: number): void` устанавливает ссылку на изображение
+- `protected set image(value: string): void` - устанавливает ссылку на изображение

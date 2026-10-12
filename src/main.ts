@@ -6,6 +6,7 @@ import { Buyer } from './components/models/Buyer';
 import { Api } from './components/base/Api';
 import { ApiService } from './components/services/ApiService';
 import { API_URL } from './utils/constants';
+import SubtractImage from "./images/Subtract.png";
 
 console.log('=ПРОДУКТЫ=');
 const productsModel = new Products();
@@ -77,13 +78,41 @@ const api = new Api(API_URL);
 const apiService = new ApiService(api);
 
 // Запрос к серверу за объектом с данными каталога.
-try {
-  const productsApi = await apiService.getProducts();
-  console.log(`Объект с сервера с данными каталога`, productsApi);
+// try {
+//   const productsApi = await apiService.getProducts();
+//   console.log(`Объект с сервера с данными каталога`, productsApi);
   
-  // Сохранение массива в модели данных и вывод массива в консоль.
-  productsModel.setItems(productsApi.items);
-  console.log(`Массив продуктов из модели Products`, productsModel.getItems());
-} catch (error) {
-  console.error('Ошибка загрузки каталога', error);
-}
+//   // Сохранение массива в модели данных и вывод массива в консоль.
+//   productsModel.setItems(productsApi.items);
+//   console.log(`Массив продуктов из модели Products`, productsModel.getItems());
+// } catch (error) {
+//   console.error('Ошибка загрузки каталога', error);
+// }
+
+
+
+import { ProductCard } from './components/views/CardCatalog';
+import { cloneTemplate, ensureElement } from './utils/utils';
+import { Header } from './components/views/Header';
+import { Gallery } from './components/views/Gallery';
+
+// обновление счетчика товаров в корзине хедера
+const cartNew = new Header(ensureElement<HTMLElement>('.header'));
+cartNew.render({counter: 10})
+
+
+// Клон шаблона → компонент → рендер с данными → на страницу.
+const card = new ProductCard(cloneTemplate<HTMLElement>('#card-catalog'));
+const cardsecond = new ProductCard(cloneTemplate<HTMLElement>('#card-catalog'));
+
+const first = card.render()
+const second = cardsecond.render({ title: "99" });
+
+// document.body.append(card.render({ title: 'Тестовый товар', price: 100, category: 'другое', image: SubtractImage }));
+
+// card.render({ title: "99" });
+
+
+const catalogNew = new Gallery(ensureElement<HTMLElement>('.gallery'))
+
+catalogNew.render({catalog: [first, second]})
