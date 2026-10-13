@@ -95,6 +95,8 @@ import { ProductCard } from './components/views/CardCatalog';
 import { cloneTemplate, ensureElement } from './utils/utils';
 import { Header } from './components/views/Header';
 import { Gallery } from './components/views/Gallery';
+import { OrderForm } from './components/views/OrderForm';
+import { Modal } from './components/views/Modal';
 
 // обновление счетчика товаров в корзине хедера
 const cartNew = new Header(ensureElement<HTMLElement>('.header'));
@@ -116,3 +118,9 @@ const second = cardsecond.render({ title: "99" });
 const catalogNew = new Gallery(ensureElement<HTMLElement>('.gallery'))
 
 catalogNew.render({catalog: [first, second]})
+const newModal = new Modal(ensureElement<HTMLElement>('#modal-container'))
+
+const newForm = new OrderForm(cloneTemplate<HTMLFormElement>('#order'))
+
+newModal.render({content: newForm.render()})
+newModal.open()
