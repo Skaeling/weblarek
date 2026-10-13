@@ -1,6 +1,9 @@
 import { IProduct } from "../../types";
+import { categoryMap } from "../../utils/constants";
 import { ensureElement } from "../../utils/utils";
 import { Component } from "../base/Component";
+
+type TCategory = keyof typeof categoryMap
 
 
 export abstract class Card<T = object> extends Component<IProduct & T> {
@@ -18,8 +21,12 @@ constructor(container: HTMLElement) {
 
 
 }
-  protected set category(value: string) {
+  protected set category(value: TCategory) {
+    Object.values(categoryMap).forEach((className) => {this.categoryElement.classList.remove(className)});
     this.categoryElement.textContent = value;
+    this.categoryElement.classList.add(categoryMap[value])
+
+
   }
 
   protected set title(value: string) {
