@@ -1,11 +1,15 @@
 import { TPayment, IBuyer, TValidationErrors } from '../../types';
 import { buyerMap } from '../../utils/constants';
+import { IEvents } from '../base/Events';
 
 export class Buyer {
   private payment: TPayment | null = null;
   private address: string = '';
   private email: string = '';
   private phone: string = '';
+
+  constructor(protected events: IEvents) {}
+  
 
   // сохраняет данные в модель,
   // с возможностью изменить только одно значение объекта, не удаляя других.
@@ -22,6 +26,7 @@ export class Buyer {
     if (data.phone !== undefined) {
       this.phone = data.phone;
     }
+    this.events.emit('buyer:changed');
   }
 
   // получает все данные покупателя
@@ -40,6 +45,8 @@ export class Buyer {
     this.address = '';
     this.email = '';
     this.phone = '';
+    this.events.emit('buyer:changed');
+
   }
 
   //валидирует все поля формы, возвращает объект с ошибками или пустой.

@@ -8,8 +8,19 @@ import { ApiService } from './components/services/ApiService';
 import { API_URL } from './utils/constants';
 import SubtractImage from "./images/Subtract.png";
 
+const events = new EventEmitter();
 console.log('=ПРОДУКТЫ=');
-const productsModel = new Products();
+const productsModel = new Products(events);
+
+// подписчик на продукты 
+
+events.on('catalog:changed', () => {
+  console.log(
+    'Событие catalog:changed! Добавлены продукты:',
+    productsModel.getItems().map((item) => `${item.title}: ${item.price}`)
+  );
+});
+
 // добавляем товары в каталог
 productsModel.setItems(apiProducts.items);
 console.log(`Массив товаров из модели:`, productsModel.getItems());
@@ -23,7 +34,15 @@ productsModel.setSelectedItem(apiProducts.items[3]);
 console.log(`Подробное описание товара`, productsModel.getSelectedItem());
 
 console.log(`\n\n=КОРЗИНА=`);
-const cartModel = new Cart();
+const cartModel = new Cart(events);
+
+events.on('cart:changed', () => {
+  console.log(
+    'Событие cart:changed! Содержимое корзины изменено:',
+    cartModel.getItems().map((item) => `${item.title}: ${item.price}`)
+  );
+});
+
 // добавление товаров
 cartModel.addProduct(apiProducts.items[3]);
 cartModel.addProduct(apiProducts.items[1]);
@@ -54,7 +73,16 @@ cartModel.clear();
 console.log(`Была очищена корзина:`, cartModel.getItems());
 
 console.log('\n\n=ПОКУПАТЕЛЬ=');
-const buyerModel = new Buyer();
+const buyerModel = new Buyer(events);
+
+events.on('buyer:changed', () => {
+  console.log(
+    'Событие buyer:changed! Данные покупателя изменены:',
+    buyerModel.getData());
+});
+
+
+
 // Сохраняем данные всех полей в модель
 buyerModel.setData(mockUserFull);
 console.log(`Создан покупатель с полным профилем`, buyerModel.getData());
@@ -97,6 +125,7 @@ import { Header } from './components/views/Header';
 import { Gallery } from './components/views/Gallery';
 import { OrderForm } from './components/views/OrderForm';
 import { Modal } from './components/views/Modal';
+import { EventEmitter } from './components/base/Events';
 
 // обновление счетчика товаров в корзине хедера
 const cartNew = new Header(ensureElement<HTMLElement>('.header'));
@@ -118,9 +147,13 @@ const second = cardsecond.render({ title: "99" });
 const catalogNew = new Gallery(ensureElement<HTMLElement>('.gallery'))
 
 catalogNew.render({catalog: [first, second]})
-const newModal = new Modal(ensureElement<HTMLElement>('#modal-container'))
 
-const newForm = new OrderForm(cloneTemplate<HTMLFormElement>('#order'))
 
-newModal.render({content: newForm.render()})
-newModal.open()
+// const newModal = new Modal(ensureElement<HTMLElement>('#modal-container'))
+
+// const newForm = new OrderForm(cloneTemplate<HTMLFormElement>('#order'))
+
+// newModal.render({content: newForm.render()})
+// newModal.open()
+
+
