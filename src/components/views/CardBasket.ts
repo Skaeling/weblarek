@@ -1,10 +1,14 @@
 import { ensureElement } from "../../utils/utils";
 import { Card } from "./Card";
 
+interface ICardBasket {
+  index: string,
+}
+
 interface ICardBasketActions {
   onRemove: () => void;
 }
-export class CardBasket extends Card {
+export class CardBasket extends Card<&ICardBasket> {
   protected indexElement: HTMLElement
   protected deleteButton: HTMLButtonElement
 
