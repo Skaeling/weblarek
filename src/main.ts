@@ -6,7 +6,7 @@ import { Buyer } from './components/models/Buyer';
 import { Api } from './components/base/Api';
 import { ApiService } from './components/services/ApiService';
 import { API_URL, CDN_URL } from './utils/constants';
-import { ProductCard } from './components/views/CardCatalog';
+import { CardCatalog } from './components/views/CardCatalog';
 import { cloneTemplate, ensureElement } from './utils/utils';
 import { Header } from './components/views/Header';
 import { Gallery } from './components/views/Gallery';
@@ -14,6 +14,10 @@ import { OrderForm } from './components/views/OrderForm';
 import { Modal } from './components/views/Modal';
 import { EventEmitter } from './components/base/Events';
 import { ContactsForm } from './components/views/ContactsForm';
+import { CardPreview } from './components/views/CardPreview';
+import { Basket } from './components/views/Basket';
+import { CardBasket } from './components/views/CardBasket';
+import { OrderSuccess } from './components/views/OrderSuccess';
 
 const events = new EventEmitter();
 // console.log('=ПРОДУКТЫ=');
@@ -109,16 +113,60 @@ events.onAll(({ eventName }) => console.log('Событие', eventName))
 
 const gallery = new Gallery(ensureElement<HTMLElement>('.gallery'))
 
-events.on('catalog:changed', () => {
-  const cards = products.getItems().map((product) => 
-  new ProductCard(cloneTemplate<HTMLElement>('#card-catalog')).render({
-    ...product,
-    image: `${CDN_URL}${product.image}`,
-  })
+// events.on('catalog:changed', () => {
+//   const cards = products.getItems().map((product) => 
+//   new CardCatalog(cloneTemplate<HTMLElement>('#card-catalog')).render({
+//     ...product,
+//     image: `${CDN_URL}${product.image}`,
+//   })
+// );
+
+// gallery.render({catalog: cards });
+// })
+
+
+const modal = new Modal(
+  ensureElement<HTMLElement>('#modal-container')
 );
 
-gallery.render({catalog: cards });
-})
+events.on('catalog:changed', () => {
+  const cards = products.getItems().map((product) => {
+    const card = new CardCatalog(
+      cloneTemplate<HTMLElement>('#card-catalog'),
+      {
+        onClick: () => {
+          const preview = new CardPreview(
+            cloneTemplate<HTMLElement>('#card-preview'),
+            {
+              onAdd: () => {
+                console.log('Добавить в корзину:', product);
+              },
+            }
+          );
+
+          const previewElement = preview.render({
+            ...product,
+            image: `${CDN_URL}${product.image}`,
+          });
+
+          modal.render({
+            content: previewElement,
+          });
+
+          modal.open();
+        },
+      }
+    );
+
+    return card.render({
+      ...product,
+      image: `${CDN_URL}${product.image}`,
+    });
+  });
+
+  gallery.render({ catalog: cards });
+});
+
 
 console.log('\n\n=API=');
 
@@ -139,20 +187,36 @@ try {
 
 //  тест формы контактов
 const testEvents = new EventEmitter();
-const modal = new Modal(ensureElement<HTMLElement>('#modal-container'))
+const cartmodal = new Modal(ensureElement<HTMLElement>('#modal-container'))
 
-const contacts = new ContactsForm(testEvents, cloneTemplate<HTMLFormElement>('#contacts'))
-const order = new OrderForm(testEvents, cloneTemplate<HTMLFormElement>('#order'))
+// const contacts = new ContactsForm(testEvents, cloneTemplate<HTMLFormElement>('#contacts'))
+// const order = new OrderForm(testEvents, cloneTemplate<HTMLFormElement>('#order'))
+const cart = new Basket(cloneTemplate<HTMLElement>('#basket'), {
+              onOrder: () => {
+                console.log('Оформлено:');
+              },
+            })
 
-testEvents.onAll(({ eventName, data }) => console.log('событие формы', eventName, data))
-modal.render({content: order.render({mockUserFull})})
-// modal.render({content: contacts.render({mockUserFull})}) 
+          
 
 
+testEvents.onAll(({ eventName, data }) => console.log('событие корзины', eventName, data))
+const cardBasket = new CardBasket(cloneTemplate<HTMLElement>('#card-basket'), {
+  onRemove: () => {console.log('товар удален')}
+})
+const basketCardElement = cardBasket.render(apiProducts.items[0]);
+cartmodal.render({
+  content: cart.render({
+    list: [basketCardElement],
+    price: apiProducts.items[0].price ?? 0,
+  }),
+});
 
+const success = new OrderSuccess(cloneTemplate<HTMLElement>('#success'), {
+  onClose: () => {console.log('window closed')}
+})
 
-
-
+cartmodal.render({content: success.render({description: 1000})})
 // обновление счетчика товаров в корзине хедера
 // const cartNew = new Header(ensureElement<HTMLElement>('.header'));
 // cartNew.render({counter: 10})

@@ -1,3 +1,5 @@
+import { categoryMap } from "../utils/constants";
+
 export type ApiPostMethods = 'POST' | 'PUT' | 'DELETE';
 
 export interface IApi {
@@ -44,3 +46,6 @@ export type TOrderResponse = {
   id: string;
   total: number;
 };
+
+export type TCategory = keyof typeof categoryMap
+
