@@ -33,12 +33,38 @@ const gallery = new Gallery(ensureElement<HTMLElement>('.gallery'))
 const header = new Header(ensureElement<HTMLElement>('.header'), {
   onCartClick: () => events.emit('headerBasket:selected')})
 
-// const preview = new CardPreview(cloneTemplate<HTMLElement>('#card-preview'), {
-//       onAdd: () => events.emit('card:added')})
-
 events.onAll(({ eventName }) => console.log('Событие', eventName))
 
+// функция рендера preview карточки
+function renderPreview(item: IProduct) {
+  const isInCart = cart.hasItemById(item.id)
+  modal.render({
+    content: new CardPreview(cloneTemplate<HTMLElement>('#card-preview'), {
+      onAction: () => events.emit('preview:changed', item)
+    }).render({
+      title: item.title,
+      text: item.description,
+      price: item.price,
+      category: item.category,
+      image: CDN_URL + item.image,
+      buttonText: isInCart ? 'Удалить из корзины' : 'В корзину'
+      
+    })})
+}
 
+// функция рендера preview корзины
+function renderBasket() {
+  const orderCards = cart.getItems().map((item, index) =>
+  new CardBasket(cloneTemplate<HTMLElement>('#card-basket'), {onRemove: () => events.emit('basket:itemRemoved', item),}).render(
+    {...item,
+    index: String(index + 1)}
+  ))
+  modal.render({content: new Basket(cloneTemplate<HTMLElement>('#basket'), {
+    onOrder: () => events.emit('order:added'),
+
+  }).render({list: orderCards, price: cart.getTotalPrice()})
+})
+}
 
 // Каталог изменился → забрать товары у модели и перерисовать карточки.
 events.on('catalog:changed', () => {
@@ -56,77 +82,58 @@ events.on('catalog:changed', () => {
   gallery.render({ catalog: cards });
 });
 
+// выбрана корзина -> запрашиваем из модели cart -> отрисовываем modal Basket
 events.on('headerBasket:selected', () => {
-  const orderCards = cart.getItems().map((item) =>
-  new CardBasket(cloneTemplate<HTMLElement>('#card-basket'), {onRemove: () => events.emit('basket:changed'),}).render(
-    {index: item}
-  ))
-  modal.render({content: new Basket(cloneTemplate<HTMLElement>('#basket'), {
-    onOrder: () => events.emit('order:added'),
-
-  }).render({list: order})
-})
+  renderBasket();
 })
 
 
-// была выбрана конкретная карточка
+// выбрана конкретная карточка -> обновляем модель products
 events.on('card:selected', (item: IProduct) => {
-  modal.render({
-    content: new CardPreview(cloneTemplate<HTMLElement>('#card-preview'), {
-      onAdd: () => events.emit('card:added', item)
-    }).render({
-      title: item.title,
-      description: item.description,
-      price: item.price,
-      category: item.category,
-      image: CDN_URL + item.image
-    }),
-  });
+  products.setSelectedItem(item)
+  renderPreview(item);
 });
 
+// карточка добавлена/удалена в/из корзины -> обновляем модель Cart и preview.
+events.on('preview:changed', () => {
+  const item = products.getSelectedItem()
+  if (!item) {
+    return;
+  }
+  if (cart.hasItemById(item.id)) {
+    cart.removeProduct(item)}
+  else {
+    cart.addProduct(item);
+  }
 
-// карточка добавлена в корзину -> обновляем корзину, хедер, и саму карточку.
-
-events.on('card:added', (item: IProduct) => {
-  cart.addProduct(item);
-  header.render({counter: cart.getTotalCount()})
-  modal.render({
-    content: new CardPreview(cloneTemplate<HTMLElement>('#card-preview'), {
-      onAdd: () => events.emit('card:added', item)
-    }).render({
-      title: item.title,
-      description: item.description,
-      price: item.price,
-      category: item.category,
-      image: CDN_URL + item.image,
-      buttonText: 'Удалить из корзины'
-      
-    }),
-  });
+  renderPreview(item)
 });
 
-// Корзина изменилась → .
-
-events.on('cart:changed', () => {
+// удаление товара из корзины 
+events.on('basket:itemRemoved', (item: IProduct) => {
+  cart.removeProduct(item);
+  renderBasket()
 
 })
-  ;
 
-//   header.render({ catalog: cards });
-// });
+
+// корзина изменена  -> обновляем counter
+events.on('cart:changed', () => {
+  header.render({counter: cart.getTotalCount()})
+  });
 
 // В Моделях данных:
 // изменение каталога товаров +
 // изменение выбранного для просмотра товара +
-// изменение содержимого корзины
+// изменение содержимого корзины +
 // изменение данных покупателя
 
 // В Представлениях:
 // выбор карточки для просмотра +
-// нажатие кнопки покупки товара
-// нажатие кнопки удаления товара из корзины
-// нажатие кнопки открытия корзины
-// нажатие кнопки оформления заказа
+// нажатие кнопки покупки товара + 
+// нажатие кнопки удаления товара из корзины +
+// нажатие кнопки открытия корзины +
+// нажатие кнопки оформления заказа 
 // нажатие кнопки перехода ко второй форме оформления заказа
 // нажатие кнопки оплаты/завершения оформления заказа
 // изменение данных в формах

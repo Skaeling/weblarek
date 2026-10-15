@@ -2,9 +2,9 @@ import { IProduct } from "../../types";
 import { ensureElement } from "../../utils/utils";
 import { Component } from "../base/Component";
 
+type TCard = Pick<IProduct, 'title' | 'price'>
 
-
-export abstract class Card<T = object> extends Component<IProduct & T> {
+export abstract class Card<T = object> extends Component<TCard & T> {
 protected titleElement: HTMLElement  
 protected priceElement: HTMLElement 
 

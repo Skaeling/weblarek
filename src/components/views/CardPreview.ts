@@ -2,15 +2,16 @@ import { TCategory } from "../../types";
 import { categoryMap } from "../../utils/constants";
 import { ensureElement } from "../../utils/utils";
 import { Card } from "./Card";
+import { TCardCatalog } from "./CardCatalog";
 
-interface ICardPreview {
+interface ICardPreview extends TCardCatalog {
   text: string,
   buttonText: string,
 
 }
 
 interface ICardPreviewActions {
-  onAdd: () => void;
+  onAction: () => void;
 }
 
 export class CardPreview extends Card<&ICardPreview> {
@@ -26,8 +27,8 @@ export class CardPreview extends Card<&ICardPreview> {
   this.textElement = ensureElement<HTMLElement>('.card__text', this.container);
   this.buyButton = ensureElement<HTMLButtonElement>('.card__button', this.container);
 
-  if (actions?.onAdd) {
-      this.buyButton.addEventListener('click', actions.onAdd)
+  if (actions?.onAction) {
+      this.buyButton.addEventListener('click', actions.onAction)
     }
 }
 
@@ -39,8 +40,6 @@ export class CardPreview extends Card<&ICardPreview> {
     Object.values(categoryMap).forEach((className) => {this.categoryElement.classList.remove(className)});
     this.categoryElement.textContent = value;
     this.categoryElement.classList.add(categoryMap[value])
-
-
   }
 
 protected set image(value: string) {
