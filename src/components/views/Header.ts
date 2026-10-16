@@ -1,13 +1,6 @@
+import { IHeader, IHeaderActions } from "../../types";
 import { ensureElement } from "../../utils/utils";
 import { Component } from "../base/Component";
-
-interface IHeader {
-  counter: number
-}
-
-interface IHeaderActions {
-  onCartClick: () => void;
-}
 
 export class Header extends Component<IHeader> {
 protected basketButton: HTMLButtonElement 

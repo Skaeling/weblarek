@@ -1,9 +1,9 @@
+import { TContactsForm } from "../../types";
 import { ensureElement } from "../../utils/utils";
 import { IEvents } from "../base/Events";
 import { Form } from "./Form";
 
-
-export class ContactsForm extends Form {
+export class ContactsForm extends Form<TContactsForm> {
   protected emailInput: HTMLInputElement
   protected phoneInput: HTMLInputElement
 

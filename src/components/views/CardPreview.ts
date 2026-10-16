@@ -1,18 +1,9 @@
-import { TCategory } from "../../types";
+import { ICardPreview, ICardPreviewActions, TCategory } from "../../types";
 import { categoryMap } from "../../utils/constants";
 import { ensureElement } from "../../utils/utils";
 import { Card } from "./Card";
-import { TCardCatalog } from "./CardCatalog";
 
-interface ICardPreview extends TCardCatalog {
-  text: string,
-  buttonText: string,
 
-}
-
-interface ICardPreviewActions {
-  onAction: () => void;
-}
 
 export class CardPreview extends Card<&ICardPreview> {
   protected textElement: HTMLElement
@@ -49,5 +40,9 @@ protected set image(value: string) {
 protected set buttonText(value: string) {
   this.buyButton.textContent = value
 }
+
+protected set valid(value: boolean) {
+    this.buyButton.disabled = !value;
+  }
 
     }

@@ -1,16 +1,8 @@
+import { IBasket, IBasketActions } from "../../types";
 import { ensureElement } from "../../utils/utils";
 import { Component } from "../base/Component";
 
-interface IBasket {
-  list: HTMLElement[];
-  price: number
 
-}
-
-interface IBasketActions {
-  onOrder: () => void;
-
-}
 export class Basket extends Component<IBasket> {
   protected listElements: HTMLElement
   protected orderButton: HTMLButtonElement
@@ -37,5 +29,9 @@ export class Basket extends Component<IBasket> {
   protected set price(value: number) {
     this.priceElement.textContent = `${value} синапсов`
 
+  }
+
+   protected set valid(value: boolean) {
+    this.orderButton.disabled = !value;
   }
 }

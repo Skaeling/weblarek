@@ -1,13 +1,7 @@
+import { IOrderSuccess, IOrderSuccessActions } from "../../types";
 import { ensureElement } from "../../utils/utils";
 import { Component } from "../base/Component";
 
-interface IOrderSuccess {
-  description: number;
-}
-
-interface IOrderSuccessActions {
-  onClose: () => void;
-}
 
 export class OrderSuccess extends Component<IOrderSuccess> {
   protected descriptionElement: HTMLElement
@@ -23,7 +17,7 @@ export class OrderSuccess extends Component<IOrderSuccess> {
     }
   }
 
-  protected set description(value: number) {
+  protected set total(value: number) {
     this.descriptionElement.textContent = `Списано ${value} синапсов`
   }
 }

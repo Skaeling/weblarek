@@ -49,3 +49,74 @@ export type TOrderResponse = {
 
 export type TCategory = keyof typeof categoryMap
 
+export interface IBasket {
+  list: HTMLElement[];
+  price: number;
+  valid: boolean;
+
+}
+
+export interface IBasketActions {
+  onOrder: () => void;
+
+}
+
+export type TCard = Pick<IProduct, 'title' | 'price'>
+
+export interface ICardBasket {
+  index: number,
+}
+
+export interface ICardBasketActions {
+  onRemove: () => void;
+}
+
+export interface ICardCatalog extends Pick<IProduct, 'image' | 'category'>{}
+
+export interface ICardCatalogActions {
+  onClick: () => void;
+}
+
+export interface ICardPreview extends ICardCatalog {
+  text: string,
+  buttonText: string,
+  valid: boolean;
+
+}
+
+export interface ICardPreviewActions {
+  onAction: () => void;
+}
+
+export type TContactsForm = Pick<IBuyer, 'email' | 'phone'>
+
+export interface IForm {
+  errors: TValidationErrors;
+  valid: boolean;
+}
+
+export interface ICatalog {
+  catalog: HTMLElement[]
+}
+
+export interface IHeader {
+  counter: number
+}
+
+export interface IHeaderActions {
+  onCartClick: () => void;
+}
+
+export interface IModalData {
+  content: HTMLElement;
+}
+
+export type TOrderForm = Pick<IBuyer, 'payment' | 'address'>
+
+export interface IOrderSuccess {
+  total: number;
+}
+
+export interface IOrderSuccessActions {
+  onClose: () => void;
+}

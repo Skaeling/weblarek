@@ -1,8 +1,5 @@
+import { ICatalog } from "../../types";
 import { Component } from "../base/Component";
-
-interface ICatalog {
-  catalog: HTMLElement[]
-}
 
 export class Gallery extends Component<ICatalog> {
 

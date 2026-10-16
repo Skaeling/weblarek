@@ -1,8 +1,6 @@
-import { IProduct } from "../../types";
+import { TCard } from "../../types";
 import { ensureElement } from "../../utils/utils";
 import { Component } from "../base/Component";
-
-type TCard = Pick<IProduct, 'title' | 'price'>
 
 export abstract class Card<T = object> extends Component<TCard & T> {
 protected titleElement: HTMLElement  
@@ -20,8 +18,10 @@ constructor(container: HTMLElement) {
     this.titleElement.textContent = value;
   }
 
-  protected set price(value: number) {
-    this.priceElement.textContent = `${value} синапсов`;
+  protected set price(value: number | null ) {
+    if (value === null) {this.priceElement.textContent = 'Бесценно'}
+    else
+    {this.priceElement.textContent = `${value} синапсов`;}
   }
 
 }

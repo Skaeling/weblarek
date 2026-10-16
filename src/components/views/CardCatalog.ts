@@ -1,15 +1,11 @@
-import { IProduct, TCategory } from "../../types";
+import { ICardCatalogActions, ICardCatalog, TCategory } from "../../types";
 import { categoryMap } from "../../utils/constants";
 import { ensureElement } from "../../utils/utils";
 import { Card } from "./Card";
 
-export interface TCardCatalog extends Pick<IProduct, 'image' | 'category'>{}
 
-interface ICardCatalogActions {
-  onClick: () => void;
-}
 
-export class CardCatalog extends Card<& TCardCatalog> {
+export class CardCatalog extends Card<& ICardCatalog> {
 protected categoryElement: HTMLElement 
 protected imageElement: HTMLImageElement 
 

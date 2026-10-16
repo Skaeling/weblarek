@@ -1,9 +1,9 @@
+import { IForm, TValidationErrors } from "../../types";
 import { ensureElement } from "../../utils/utils";
 import { Component } from "../base/Component";
 import { IEvents } from "../base/Events";
 
-
-export abstract class Form<T = object> extends Component<object & T> {
+export abstract class Form<T = object> extends Component<IForm & T> {
 protected errorsElement: HTMLElement 
 protected submitButton: HTMLButtonElement
 
@@ -14,8 +14,10 @@ constructor(protected events: IEvents, protected container: HTMLFormElement) {
 
 }
 
-protected set errors(value: string) {
-  this.errorsElement.textContent = value
+protected set errors(value: TValidationErrors) {
+  //убираем undefined значения из массива ошибок
+  this.errorsElement.textContent = Object.values(value).filter(Boolean).join(';')
+  
 }
 
 protected set valid(value: boolean) {
