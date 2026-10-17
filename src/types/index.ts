@@ -1,4 +1,4 @@
-import { categoryMap } from "../utils/constants";
+import { categoryMap } from '../utils/constants';
 
 export type ApiPostMethods = 'POST' | 'PUT' | 'DELETE';
 
@@ -47,48 +47,45 @@ export type TOrderResponse = {
   total: number;
 };
 
-export type TCategory = keyof typeof categoryMap
+export type TCategory = keyof typeof categoryMap;
 
 export interface IBasket {
   list: HTMLElement[];
   price: number;
   valid: boolean;
-
 }
 
 export interface IBasketActions {
   onOrder: () => void;
-
 }
 
-export type TCard = Pick<IProduct, 'title' | 'price'>
+export type TCard = Pick<IProduct, 'title' | 'price'>;
 
 export interface ICardBasket {
-  index: number,
+  index: number;
 }
 
 export interface ICardBasketActions {
   onRemove: () => void;
 }
 
-export interface ICardCatalog extends Pick<IProduct, 'image' | 'category'>{}
+export interface ICardCatalog extends Pick<IProduct, 'image' | 'category'> {}
 
 export interface ICardCatalogActions {
   onClick: () => void;
 }
 
 export interface ICardPreview extends ICardCatalog {
-  text: string,
-  buttonText: string,
+  text: string;
+  buttonText: string;
   valid: boolean;
-
 }
 
 export interface ICardPreviewActions {
   onAction: () => void;
 }
 
-export type TContactsForm = Pick<IBuyer, 'email' | 'phone'>
+export type TContactsForm = Pick<IBuyer, 'email' | 'phone'>;
 
 export interface IForm {
   errors: TValidationErrors;
@@ -96,11 +93,11 @@ export interface IForm {
 }
 
 export interface ICatalog {
-  catalog: HTMLElement[]
+  catalog: HTMLElement[];
 }
 
 export interface IHeader {
-  counter: number
+  counter: number;
 }
 
 export interface IHeaderActions {
@@ -111,7 +108,7 @@ export interface IModalData {
   content: HTMLElement;
 }
 
-export type TOrderForm = Pick<IBuyer, 'payment' | 'address'>
+export type TOrderForm = Pick<IBuyer, 'payment' | 'address'>;
 
 export interface IOrderSuccess {
   total: number;
@@ -120,3 +117,5 @@ export interface IOrderSuccess {
 export interface IOrderSuccessActions {
   onClose: () => void;
 }
+
+export type TBuyerChange = { field: keyof IBuyer; value: string };
