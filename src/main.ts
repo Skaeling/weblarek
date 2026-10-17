@@ -216,11 +216,11 @@ events.on('contacts:submitted', async () => {
   };
 
   try {
-    const responce = await apiService.postOrder(request);
+    const response = await apiService.postOrder(request);
     // появляется сообщение об успешной оплате, товары удаляются из корзины, данные покупателя очищаются.
     cart.clear();
     buyer.clearData();
-    modal.render({ content: success.render({ total: responce.total }) });
+    modal.render({ content: success.render({ total: response.total }) });
   } catch (error) {
     console.error('Ошибка размещения заказа', error);
   }
