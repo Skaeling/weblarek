@@ -34,6 +34,13 @@ const gallery = new Gallery(ensureElement<HTMLElement>('.gallery'));
 const header = new Header(ensureElement<HTMLElement>('.header'), {
   onCartClick: events.trigger('basket:selected'),
 });
+const cardPreview = new CardPreview(
+  cloneTemplate<HTMLElement>('#card-preview'),
+  { onAction: events.trigger('productCard:changed') }
+);
+const basket = new Basket(cloneTemplate<HTMLElement>('#basket'), {
+  onOrder: events.trigger('basket:orderRequested'),
+});
 const order = new OrderForm(events, cloneTemplate<HTMLFormElement>('#order'));
 const contacts = new ContactsForm(
   events,
@@ -43,39 +50,20 @@ const success = new OrderSuccess(cloneTemplate<HTMLElement>('#success'), {
   onClose: events.trigger('success:closed'),
 });
 
-events.onAll(({ eventName }) => console.log('Событие', eventName));
+let orderTouched = false;
+let contactsTouched = false;
 
-// функция рендера детальной карточки
-function renderCardPreview(item: IProduct) {
-  const isInCart = cart.hasItemById(item.id);
-  modal.render({
-    content: new CardPreview(cloneTemplate<HTMLElement>('#card-preview'), {
-      onAction: events.trigger('productCard:changed', item),
-    }).render({
-      title: item.title,
-      text: item.description,
-      price: item.price,
-      category: item.category,
-      image: CDN_URL + item.image,
-      buttonText: isInCart ? 'Удалить из корзины' : 'В корзину',
-      valid: item.price !== null,
-    }),
-  });
-}
+events.onAll(({ eventName }) => console.log('Событие', eventName));
 
 // функция рендера корзины с товарами
 function renderBasket() {
-  const orderCards = cart
-    .getItems()
-    .map((item, index) =>
-      new CardBasket(cloneTemplate<HTMLElement>('#card-basket'), {
-        onRemove: events.trigger('basket:removeRequested', item),
-      }).render({ ...item, index: index + 1 })
-    );
+  const orderCards = cart.getItems().map((item, index) =>
+    new CardBasket(cloneTemplate<HTMLElement>('#card-basket'), {
+      onRemove: events.trigger('basket:removeRequested', item),
+    }).render({ ...item, index: index + 1 })
+  );
   modal.render({
-    content: new Basket(cloneTemplate<HTMLElement>('#basket'), {
-      onOrder: events.trigger('basket:orderRequested'),
-    }).render({
+    content: basket.render({
       list: orderCards,
       price: cart.getTotalPrice(),
       valid: cart.getTotalCount() > 0,
@@ -99,7 +87,7 @@ events.on('catalog:changed', () => {
       title: item.title,
       price: item.price,
       category: item.category,
-      image: CDN_URL + item.image,
+      image: item.image,
     })
   );
 
@@ -111,10 +99,29 @@ events.on('basket:selected', () => {
   renderBasket();
 });
 
-// выбрана конкретная карточка -> обновляем модель products
+// выбрана конкретная карточка -> сохраняем продукт в модель Products
 events.on('productCard:selected', (item: IProduct) => {
   products.setSelectedItem(item);
-  renderCardPreview(item);
+});
+
+// в каталоге была сохранен продукт -> рендер детальной карточки
+events.on('catalog:cardSelected', () => {
+  const currentProduct = products.getSelectedItem();
+  if (!currentProduct) {
+    return;
+  }
+  const isInCart = cart.hasItemById(currentProduct.id);
+  modal.render({
+    content: cardPreview.render({
+      title: currentProduct.title,
+      text: currentProduct.description,
+      price: currentProduct.price,
+      category: currentProduct.category,
+      image: currentProduct.image,
+      buttonText: isInCart ? 'Удалить из корзины' : 'В корзину',
+      valid: currentProduct.price !== null,
+    }),
+  });
 });
 
 // Запрошено изменение конкретной карточка -> забираем из products её id -> обновляем модель Cart -> закрываем модальное окно
@@ -131,14 +138,14 @@ events.on('productCard:changed', () => {
   modal.close();
 });
 
-//Запрошено удаление товара из корзины -> обновляем модель Cart -> рендерим корзину
+//Запрошено удаление товара из корзины -> обновляем модель Cart
 events.on('basket:removeRequested', (item: IProduct) => {
   cart.removeProduct(item);
-  renderBasket();
 });
 
-// модель Cart изменена  -> обновляем counter хедера
+// модель Cart изменена  -> обновляем counter хедера и корзину
 events.on('cart:changed', () => {
+  renderBasket();
   header.render({ counter: cart.getTotalCount() });
 });
 
@@ -154,7 +161,10 @@ events.on('basket:orderRequested', () => {
 });
 
 // форма Order изменена -> обновление Buyer
-events.on('orderForm:changed', updateBuyer);
+events.on('orderForm:changed', (data: TBuyerChange) => {
+  orderTouched = true;
+  updateBuyer(data);
+});
 
 //форма заказа принята -> рендер формы Contacts
 events.on('orderForm:submitted', () => {
@@ -168,15 +178,15 @@ events.on('orderForm:submitted', () => {
 });
 
 //форма Contacts изменена -> обновляем Buyer
-events.on('contacts:changed', updateBuyer);
+events.on('contacts:changed', (data: TBuyerChange) => {
+  contactsTouched = true;
+  updateBuyer(data);
+});
 
 // обновление Buyer -> валидация Buyer -> рендер обеих форм
 events.on('buyer:changed', () => {
   const buyerData = buyer.getData();
   const errors = buyer.validate();
-
-  const orderTouched = [buyerData.payment, buyerData.address].some(Boolean);
-  const contactsTouched = [buyerData.email, buyerData.phone].some(Boolean);
 
   const orderErrors = {
     payment: errors.payment,
@@ -189,28 +199,29 @@ events.on('buyer:changed', () => {
   };
 
   order.render({
+    address: buyerData.address,
     payment: buyerData.payment,
     errors: orderTouched ? orderErrors : {},
     valid: !Object.values(orderErrors).some(Boolean),
   });
 
   contacts.render({
+    email: buyerData.email,
+    phone: buyerData.phone,
     errors: contactsTouched ? contactsErrors : {},
-    valid: !Object.values(contactsErrors).some(Boolean),
+    valid: !Object.values(errors).some(Boolean),
   });
 });
 
 //при нажатии на кнопку оплаты -> передача данных о заказе на сервер,
 events.on('contacts:submitted', async () => {
   const buyerData = buyer.getData();
-  if (!buyerData.payment) {
-    return;
-  }
+
   const request: IOrderRequest = {
     email: buyerData.email,
     phone: buyerData.phone,
     address: buyerData.address,
-    payment: buyerData.payment,
+    payment: buyerData.payment!,
     total: cart.getTotalPrice(),
     items: cart.getItems().map((item) => item.id),
   };
@@ -218,6 +229,8 @@ events.on('contacts:submitted', async () => {
   try {
     const response = await apiService.postOrder(request);
     // появляется сообщение об успешной оплате, товары удаляются из корзины, данные покупателя очищаются.
+    orderTouched = false;
+    contactsTouched = false;
     cart.clear();
     buyer.clearData();
     modal.render({ content: success.render({ total: response.total }) });
@@ -235,8 +248,12 @@ events.on('success:closed', () => {
 try {
   const productsApi = await apiService.getProducts();
 
-  // Сохранение массива в модель Products.
-  products.setItems(productsApi.items);
+  // Сохранение массива в модель Products c обновленным путем image.
+  const updImageProducts = productsApi.items.map((item) => ({
+    ...item,
+    image: CDN_URL + item.image,
+  }));
+  products.setItems(updImageProducts);
 } catch (error) {
   console.error('Ошибка загрузки каталога', error);
 }

@@ -26,7 +26,7 @@ export class Products {
   // сохраняет товар для подробного отображения
   setSelectedItem(itemCard: IProduct): void {
     this.selectedItem = itemCard;
-    this.events.emit('catalog:changed');
+    this.events.emit('catalog:cardSelected');
   }
 
   // получает товар для подробного отображения
